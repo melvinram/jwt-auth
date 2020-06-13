@@ -8,7 +8,7 @@ How should this work?
 
 ### Login
 
-`POST /auth/new` - Generates JWT and returns in the response. The JWT generated is stored in-memory in the React app. The JWT token will need to expire as well so it's not valid forever.
+`POST /auth_tokens` - Generates JWT and returns in the response. The JWT generated should be stored in-memory in the React app. The JWT token will need to expire as well so it's not valid forever.
 
 The app will also generate a refresh token and will persist it to the database. This refresh token will be sent back as a `HttpOnly` cookie.
 
