@@ -23,15 +23,32 @@ class AuthTokenService
     auth_token
   end
 
-  def self.validate(jwt_token)
-    # token = token.value if token.is_a?(AuthToken)
+  def self.remove_bearer_prefix(jwt_token)
+    return unless jwt_token.present?
+    token_pattern = /^Bearer /
+    jwt_token.gsub(token_pattern, '')
+  end
+
+  def self.decode(jwt_token)
+    return { error: :jwt_token_missing } unless jwt_token
 
     begin
-      JWT.decode(jwt_token, SECRET_KEY)[0].with_indifferent_access
+      decoded_token = JWT.decode(jwt_token, SECRET_KEY)[0].with_indifferent_access
+      raise JWT::DecodeError unless decoded_token.respond_to?(:[])
+
+      if decoded_token && Time.now.to_i < decoded_token[:expiration].to_i
+        decoded_token
+      else
+        { error: :expired_token }
+      end
     rescue JWT::DecodeError
-      return nil
-      # TODO: log when nil value is passed in as token.
-      # TODO: log when token cannot be decoded because token is invalid
+      { error: :decode_error }
     end
+  end
+
+  def self.valid_token?(jwt_token)
+    jwt_token = remove_bearer_prefix(jwt_token)
+    decoded_token = decode(jwt_token)
+    decoded_token[:error].blank?
   end
 end

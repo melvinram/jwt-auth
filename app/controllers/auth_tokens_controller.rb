@@ -7,6 +7,11 @@ class AuthTokensController < ApplicationController
     render json: presenter.present, status: presenter.status
   end
 
+  def validate
+    status = AuthTokenService.valid_token?(request.authorization) ? :ok : :unauthorized
+    render json: {}, status: status
+  end
+
   private
 
   def auth_token_params

@@ -11,6 +11,10 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
     assert response.parsed_body.has_key?('auth_token')
     assert response.parsed_body.has_key?('user')
     assert_equal email, response.parsed_body['user']['email']
+
+    auth_token = response.parsed_body['auth_token']
+    get validate_auth_tokens_path, headers: { 'Authorization' => "Bearer #{auth_token}" }
+    assert_response :success
   end
 
   test "auth token creation with invalid credentials" do
@@ -20,5 +24,9 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
 
     assert_response :unauthorized
     assert response.parsed_body.has_key?('errors')
+    refute response.parsed_body.has_key?('auth_token')
+
+    get validate_auth_tokens_path, headers: { 'Authorization' => 'Bearer invalid_token' }
+    assert_response :unauthorized
   end
 end
