@@ -32,6 +32,8 @@ class AuthTokenService
   def self.decode(jwt_token)
     return { error: :jwt_token_missing } unless jwt_token
 
+    jwt_token = remove_bearer_prefix(jwt_token)
+
     begin
       decoded_token = JWT.decode(jwt_token, SECRET_KEY)[0].with_indifferent_access
       raise JWT::DecodeError unless decoded_token.respond_to?(:[])
@@ -47,8 +49,7 @@ class AuthTokenService
   end
 
   def self.valid_token?(jwt_token)
-    jwt_token = remove_bearer_prefix(jwt_token)
-    decoded_token = decode(jwt_token)
-    decoded_token[:error].blank?
+    auth_token_payload = decode(jwt_token)
+    auth_token_payload[:error].blank?
   end
 end

@@ -8,8 +8,11 @@ class AuthTokensController < ApplicationController
   end
 
   def validate
-    status = AuthTokenService.valid_token?(request.authorization) ? :ok : :unauthorized
-    render json: {}, status: status
+    if authenticated?
+      render json: { message: 'Your auth token is valid.' }, status: :ok
+    else
+      render_unauthenticated
+    end
   end
 
   private
