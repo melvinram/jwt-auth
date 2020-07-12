@@ -17,6 +17,6 @@ class ApplicationController < ActionController::Base
   end
 
   def auth_token_payload
-    @auth_token_payload ||= AuthTokenService.decode(request.authorization)
+    @auth_token_payload ||= AuthToken.decode(request.authorization)
   end
 end

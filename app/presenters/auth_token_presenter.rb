@@ -34,7 +34,7 @@ class AuthTokenPresenter
       {
         auth_token: auth_token.value,
         user: {
-          email: auth_token.user.email
+          email: auth_token.user_email
         }
       }
     end
